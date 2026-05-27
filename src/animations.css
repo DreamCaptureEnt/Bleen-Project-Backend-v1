@@ -1,0 +1,85 @@
+/* ── PAGE TRANSITION ─────────────────────────────── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── SCROLL REVEAL ───────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Your RevealObserver adds .visible — this triggers the animation */
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── STAGGER DELAYS ──────────────────────────────── */
+.delay-100 { transition-delay: 0.08s; }
+.delay-200 { transition-delay: 0.16s; }
+.delay-300 { transition-delay: 0.24s; }
+.delay-400 { transition-delay: 0.32s; }
+.delay-500 { transition-delay: 0.40s; }
+.delay-600 { transition-delay: 0.48s; }
+
+/* ── CARD HOVER ──────────────────────────────────── */
+.card-hover {
+  transition:
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.12);
+}
+
+/* ── SHIMMER BUTTON ──────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.btn-shimmer {
+  background: linear-gradient(
+    90deg,
+    #0f9188 0%,
+    #14b8a6 40%,
+    #0ea5e9 60%,
+    #0f9188 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.btn-shimmer:hover {
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.45);
+  transform: translateY(-1px);
+}
+.btn-shimmer:active {
+  transform: translateY(0);
+}
+
+/* ── BLOB FLOAT ──────────────────────────────────── */
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(20px, -15px) scale(1.04); }
+  66%       { transform: translate(-10px, 10px) scale(0.97); }
+}
+.animate-blob {
+  animation: blobFloat 8s ease-in-out infinite;
+}

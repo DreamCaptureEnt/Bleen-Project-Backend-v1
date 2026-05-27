@@ -1,0 +1,537 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --teal: #2eb4b4;
+  --navy: #174f9a;
+  --gradient: linear-gradient(to right, #2eb4b4, #174f9a);
+  --gradient-diag: linear-gradient(135deg, #2eb4b4, #174f9a);
+}
+
+* { box-sizing: border-box; }
+
+/* ── Smooth cursor ──────────────────────────────────── */
+* { cursor: none !important; }
+
+#custom-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 12px; height: 12px;
+  background: #2eb4b4;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+  mix-blend-mode: multiply;
+}
+
+#custom-cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(46, 180, 180, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  /* Ring follows with lag — this is what gives the smooth trailing feel */
+  transition: transform 0.12s linear;
+}
+
+body:hover #custom-cursor { opacity: 1; }
+
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  overflow-x: hidden;
+  background: #f8fbfc;
+  color: #162033;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+section,
+[id] {
+  scroll-margin-top: 104px;
+}
+
+main {
+  background: #f8fbfc;
+}
+
+/* ── Gradient utilities ─────────────────────────────── */
+.gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: var(--gradient);
+}
+
+.gradient-border {
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              var(--gradient) border-box;
+}
+
+/* ── Keyframes ──────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-16px); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes shimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes blobMove {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes medicineFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateX(58deg) rotateZ(0deg); }
+  50% { transform: translate3d(0, -12px, 0) rotateX(58deg) rotateZ(8deg); }
+}
+@keyframes medicineOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes medicinePulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+/* ── Page enter ─────────────────────────────────────── */
+/*
+   Smooth, unhurried entry — longer duration, gentle sine ease.
+   The blur gives a soft "focus-in" feel instead of a hard pop.
+*/
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform, filter;
+}
+
+/* ── Scroll reveal ──────────────────────────────────── */
+/*
+   Elements start invisible and slide up gently.
+   .visible is added by RevealObserver in App.jsx.
+   transition-delay is set via .delay-* below.
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Stagger delays ─────────────────────────────────── */
+/*
+   BOTH animation-delay AND transition-delay must be set.
+   animation-delay = for .animate-* classes
+   transition-delay = for .reveal transition
+*/
+.delay-100 { animation-delay: 0.10s; transition-delay: 0.10s; }
+.delay-200 { animation-delay: 0.20s; transition-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; transition-delay: 0.30s; }
+.delay-400 { animation-delay: 0.40s; transition-delay: 0.40s; }
+.delay-500 { animation-delay: 0.50s; transition-delay: 0.50s; }
+.delay-600 { animation-delay: 0.60s; transition-delay: 0.60s; }
+
+/* ── Animation helpers ──────────────────────────────── */
+.animate-fade-up     { animation: fadeInUp 0.7s ease forwards; }
+.animate-fade-left   { animation: fadeInLeft 0.7s ease forwards; }
+.animate-fade-right  { animation: fadeInRight 0.7s ease forwards; }
+.animate-float       { animation: float 4s ease-in-out infinite; }
+.animate-blob        { animation: blobMove 8s ease-in-out infinite; }
+.animate-spin-slow   { animation: spin-slow 12s linear infinite; }
+.animate-count       { animation: countUp 0.6s ease forwards; }
+.animate-slide-in    { animation: slideIn 0.4s ease forwards; }
+
+/* ── Card hover ─────────────────────────────────────── */
+.card-hover {
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease;
+  will-change: transform;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(23, 79, 154, 0.12);
+}
+
+/* ── Shimmer button ─────────────────────────────────── */
+.btn-shimmer {
+  background-image: linear-gradient(to right, #2eb4b4 0%, #174f9a 50%, #2eb4b4 100%);
+  background-size: 200% auto;
+  transition: background-position 0.6s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.btn-shimmer:hover {
+  background-position: right center;
+  box-shadow: 0 8px 24px rgba(46, 180, 180, 0.4);
+  transform: translateY(-1px);
+}
+.btn-shimmer:active {
+  transform: translateY(0);
+}
+
+/* ── Nav ────────────────────────────────────────────── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 6px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2eb4b4, #174f9a, transparent);
+  opacity: 0;
+  transform: scaleX(0.35);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.nav-shell {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.nav-link-elegant {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.nav-link-elegant::before {
+  content: '';
+  position: absolute;
+  inset: 5px 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(46, 180, 180, 0.12), rgba(23, 79, 154, 0.10));
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: -1;
+}
+
+.nav-link-elegant:hover::before,
+.nav-link-elegant.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dropdown-panel {
+  animation: dropdownIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.14);
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Hero blob ──────────────────────────────────────── */
+.hero-blob { display: none; }
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#2eb4b4, #174f9a);
+  border-radius: 3px;
+}
+
+/* ── Product tag ────────────────────────────────────── */
+.product-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(46,180,180,0.1);
+  color: #2eb4b4;
+  border: 1px solid rgba(46,180,180,0.3);
+}
+
+.section-soft {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,251,252,0.98)),
+    radial-gradient(circle at 12% 18%, rgba(46,180,180,0.08), transparent 36%),
+    radial-gradient(circle at 88% 36%, rgba(23,79,154,0.08), transparent 34%);
+}
+
+.eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(12px);
+}
+
+/* ── Medicine scene ─────────────────────────────────── */
+.medicine-scene {
+  width: min(34vw, 390px);
+  min-width: 280px;
+  aspect-ratio: 1;
+  position: relative;
+  color: #dffbff;
+  perspective: 1000px;
+  filter: drop-shadow(0 28px 55px rgba(0, 27, 55, 0.22));
+}
+
+.hero-scene {
+  position: absolute;
+  right: clamp(-96px, 4vw, 64px);
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.medicine-disc,
+.medicine-ring,
+.medicine-core,
+.medicine-node {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.medicine-disc {
+  border-radius: 50%;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.04)),
+    linear-gradient(135deg, rgba(46,180,180,0.26), rgba(23,79,154,0.18));
+  border: 1px solid rgba(255,255,255,0.26);
+}
+
+.disc-one {
+  width: 74%;
+  height: 74%;
+  animation: medicineFloat 7s ease-in-out infinite;
+}
+
+.disc-two {
+  width: 52%;
+  height: 52%;
+  opacity: 0.5;
+  animation: medicineFloat 8s ease-in-out infinite reverse;
+}
+
+.medicine-ring {
+  border: 1px solid rgba(255,255,255,0.34);
+  border-radius: 50%;
+  transform-style: preserve-3d;
+}
+
+.ring-one {
+  width: 86%;
+  height: 34%;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  animation: medicineOrbit 14s linear infinite;
+}
+
+.ring-two {
+  width: 34%;
+  height: 86%;
+  transform: translate(-50%, -50%) rotate(20deg);
+  animation: medicineOrbit 18s linear infinite reverse;
+}
+
+.medicine-core {
+  width: 104px;
+  height: 104px;
+  border-radius: 30px;
+  display: grid;
+  place-items: center;
+  color: #0e5e84;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: inset 0 0 0 1px rgba(46,180,180,0.10), 0 22px 48px rgba(10, 33, 65, 0.22);
+  animation: medicinePulse 4s ease-in-out infinite;
+}
+
+.medicine-node {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #f8feff;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.32);
+  backdrop-filter: blur(10px);
+}
+
+.node-a { transform: translate(-50%, -50%) translate(-132px, -74px); }
+.node-b { transform: translate(-50%, -50%) translate(132px, -64px); }
+.node-c { transform: translate(-50%, -50%) translate(142px, 80px); }
+.node-d { transform: translate(-50%, -50%) translate(-116px, 98px); }
+.node-e { transform: translate(-50%, -50%) translate(0, -150px); }
+.node-f { transform: translate(-50%, -50%) translate(0, 150px); }
+
+.medical-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+}
+
+/* ── Mobile menu ────────────────────────────────────── */
+.mobile-menu {
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Timeline ───────────────────────────────────────── */
+.timeline-line {
+  background: var(--gradient);
+}
+
+/* ── Input focus ────────────────────────────────────── */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #2eb4b4;
+  box-shadow: 0 0 0 3px rgba(46,180,180,0.15);
+}
+
+/* ── Hero pattern ───────────────────────────────────── */
+.hero-pattern {
+  background-image: radial-gradient(circle at 20% 50%, rgba(46,180,180,0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(23,79,154,0.08) 0%, transparent 50%);
+}
+
+/* ── Reduced motion ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .hero-scene {
+    opacity: 0.24;
+    right: -160px;
+  }
+}
+
+@media (max-width: 768px) {
+  section,
+  [id] {
+    scroll-margin-top: 88px;
+  }
+
+  .hero-scene { display: none; }
+  .card-hover:hover { transform: none; }
+
+  /* Disable custom cursor on touch devices */
+  #custom-cursor,
+  #custom-cursor-ring { display: none; }
+  * { cursor: auto !important; }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
